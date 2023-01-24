@@ -124,7 +124,7 @@ def download_file_thread(url, file_name, content_type, use_new_folder, model_nam
     elif content_type == "VAE":
         folder = "models/VAE"
         new_folder = "models/VAE/new"
-    elif content_type == "LoRA":
+    elif content_type == "LORA":
         folder = "extensions/sd-webui-additional-networks/models/LoRA"
         new_folder = "extensions/sd-webui-additional-networks/models/LoRA/new"
     if content_type == "TextualInversion" or content_type == "VAE" or content_type == "AestheticGradient":
@@ -173,7 +173,7 @@ def save_text_file(file_name, content_type, use_new_folder, trained_words, model
     elif content_type == "VAE":
         folder = "models/VAE"
         new_folder = "models/VAE/new"
-    elif content_type == "LoRA":
+    elif content_type == "LORA":
         folder = "extensions/sd-webui-additional-networks/models/LoRA"
         new_folder = "extensions/sd-webui-additional-networks/models/LoRA/new"
     if content_type == "TextualInversion" or content_type == "VAE" or content_type == "AestheticGradient":
@@ -343,7 +343,7 @@ def on_ui_tabs():
     with gr.Blocks() as civitai_interface:
         with gr.Row():
             with gr.Column(scale=2):
-                content_type = gr.Radio(label='Content type:', choices=["Checkpoint","Hypernetwork","TextualInversion","AestheticGradient", "VAE", "LoRA"], value="Checkpoint", type="value")
+                content_type = gr.Radio(label='Content type:', choices=["Checkpoint","Hypernetwork","TextualInversion","AestheticGradient", "VAE", "LORA"], value="Checkpoint", type="value")
             with gr.Column(scale=2):
                 sort_type = gr.Radio(label='Sort List by:', choices=["Newest","Most Downloaded","Highest Rated","Most Liked"], value="Newest", type="value")
             with gr.Column(scale=1):
