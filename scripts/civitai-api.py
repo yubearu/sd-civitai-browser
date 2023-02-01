@@ -125,8 +125,8 @@ def download_file_thread(url, file_name, content_type, use_new_folder, model_nam
         folder = "models/VAE"
         new_folder = "models/VAE/new"
     elif content_type == "LORA":
-        folder = "extensions/sd-webui-additional-networks/models/LoRA"
-        new_folder = "extensions/sd-webui-additional-networks/models/LoRA/new"
+        folder = "extensions/sd-webui-additional-networks/models/lora"
+        new_folder = "extensions/sd-webui-additional-networks/models/lora/new"
     if content_type == "TextualInversion" or content_type == "VAE" or content_type == "AestheticGradient":
         if use_new_folder:
             model_folder = new_folder
@@ -174,8 +174,8 @@ def save_text_file(file_name, content_type, use_new_folder, trained_words, model
         folder = "models/VAE"
         new_folder = "models/VAE/new"
     elif content_type == "LORA":
-        folder = "extensions/sd-webui-additional-networks/models/LoRA"
-        new_folder = "extensions/sd-webui-additional-networks/models/LoRA/new"
+        folder = "extensions/sd-webui-additional-networks/models/lora"
+        new_folder = "extensions/sd-webui-additional-networks/models/lora/new"
     if content_type == "TextualInversion" or content_type == "VAE" or content_type == "AestheticGradient":
         if use_new_folder:
             model_folder = new_folder
