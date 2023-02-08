@@ -110,7 +110,7 @@ def download_file(url, file_name):
 #
 #    # Close the progress bar
 #    progress.close()
-def make_new_folder(content_type, use_new_folder, model_name):
+def make_new_folder(content_type, use_new_folder, model_name, lora_old):
     if content_type == "Checkpoint":
         folder = "models/Stable-diffusion"
         new_folder = "models/Stable-diffusion/new"
@@ -126,6 +126,13 @@ def make_new_folder(content_type, use_new_folder, model_name):
     elif content_type == "VAE":
         folder = "models/VAE"
         new_folder = "models/VAE/new"
+    elif content_type == "LORA":
+        if lora_old:
+            folder = "extensions/sd-webui-additional-networks/models/lora"
+            new_folder = "extensions/sd-webui-additional-networks/models/lora/new"
+        else:
+            folder = "models/Lora"
+            new_folder = "models/Lora/new"
     if content_type == "TextualInversion" or content_type == "VAE" or content_type == "AestheticGradient":
         if use_new_folder:
             model_folder = new_folder
@@ -150,8 +157,8 @@ def make_new_folder(content_type, use_new_folder, model_name):
                 os.makedirs(model_folder)
     return model_folder
 
-def download_file_thread(url, file_name, content_type, use_new_folder, model_name):
-    model_folder = make_new_folder(content_type, use_new_folder, model_name)
+def download_file_thread(url, file_name, content_type, use_new_folder, model_name, lora_old):
+    model_folder = make_new_folder(content_type, use_new_folder, model_name, lora_old)
 
     path_to_new_file = os.path.join(model_folder, file_name)     
 
@@ -160,8 +167,8 @@ def download_file_thread(url, file_name, content_type, use_new_folder, model_nam
         # Start the thread
     thread.start()
 
-def save_text_file(file_name, content_type, use_new_folder, trained_words, model_name):
-    model_folder = make_new_folder(content_type, use_new_folder, model_name)
+def save_text_file(file_name, content_type, use_new_folder, trained_words, model_name, lora_old):
+    model_folder = make_new_folder(content_type, use_new_folder, model_name, lora_old)
 
     path_to_new_file = os.path.join(model_folder, file_name.replace(".ckpt",".txt").replace(".safetensors",".txt").replace(".pt",".txt").replace(".yaml",".txt"))
     if not os.path.exists(path_to_new_file):
@@ -309,9 +316,9 @@ def update_everything(list_models, list_versions, model_filename, dl_url):
     dl_url = update_dl_url(list_models, list_versions, f['value'])
     return (a, d, f, list_versions, list_models, dl_url)
 
-def save_image_files(preview_image_html, model_filename, content_type, use_new_folder, list_models):
+def save_image_files(preview_image_html, model_filename, content_type, use_new_folder, list_models, lora_old):
     print("Save Images Clicked")
-    model_folder = make_new_folder(content_type, use_new_folder, list_models)
+    model_folder = make_new_folder(content_type, use_new_folder, list_models, lora_old)
 
     img_urls = re.findall(r'src=[\'"]?([^\'" >]+)', preview_image_html)
     
@@ -358,7 +365,7 @@ def on_ui_tabs():
     with gr.Blocks() as civitai_interface:
         with gr.Row():
             with gr.Column(scale=2):
-                content_type = gr.Radio(label='Content type:', choices=["Checkpoint","Hypernetwork","TextualInversion","AestheticGradient", "VAE"], value="Checkpoint", type="value")
+                content_type = gr.Radio(label='Content type:', choices=["Checkpoint","Hypernetwork","TextualInversion","AestheticGradient", "VAE", "LORA"], value="Checkpoint", type="value")
             with gr.Column(scale=2):
                 sort_type = gr.Radio(label='Sort List by:', choices=["Newest","Most Downloaded","Highest Rated","Most Liked"], value="Newest", type="value")
             with gr.Column(scale=1):
@@ -382,7 +389,9 @@ def on_ui_tabs():
             save_text = gr.Button(value="2nd - Save Trained Tags as Text")
             save_images = gr.Button(value="3rd - Save Images")
             download_model = gr.Button(value="4th - Download Model")
-            save_model_in_new = gr.Checkbox(label="Save Model to new folder", value=False)
+            with gr.Row():
+                save_model_in_new = gr.Checkbox(label="Save Model to new folder", value=False)
+                old_lora = gr.Checkbox(label="Save LoRA to additional-networks", value=False)
         with gr.Row():
             preview_image_html = gr.HTML()
         save_text.click(
@@ -393,6 +402,7 @@ def on_ui_tabs():
             save_model_in_new,
             dummy,
             list_models,
+            old_lora,
             ],
             outputs=[]
         )
@@ -403,7 +413,8 @@ def on_ui_tabs():
             model_filename,
             content_type,
             save_model_in_new,
-            list_models
+            list_models,
+            old_lora,
             ],
             outputs=[]
         )
@@ -415,6 +426,7 @@ def on_ui_tabs():
             content_type,
             save_model_in_new,
             list_models,
+            old_lora,
             ],
             outputs=[]
         )
