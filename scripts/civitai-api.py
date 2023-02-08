@@ -12,7 +12,6 @@ from tqdm import tqdm
 import re
 from requests.exceptions import ConnectionError
 import urllib.request
-# from sys import platform
 
 
 def download_file(url, file_name):
@@ -311,6 +310,7 @@ def request_civit_api(api_url=None):
     data = json.loads(response.text)
     return data
 
+#from https://github.com/thetrebor/sd-civitai-browser/blob/add-download-images/scripts/civitai-api.py
 def update_everything(list_models, list_versions, model_filename, dl_url):
     (a, d, f) = update_model_info(list_models, list_versions)
     dl_url = update_dl_url(list_models, list_versions, f['value'])
