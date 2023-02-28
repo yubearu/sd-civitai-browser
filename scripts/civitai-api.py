@@ -86,30 +86,6 @@ def download_file(url, file_name):
         else:
             print(f"Error: File download failed. Retrying... {file_name_display}")
 
-#def download_file(url, file_name):
-#    # Download the file and save it to a local file
-#    response = requests.get(url, stream=True)
-#
-#    # Get the total size of the file
-#    total_size = int(response.headers.get("Content-Length", 0))
-#
-#    # Split filename from included path
-#    tokens = re.split(re.escape('\\'), file_name)
-#    file_name_display = tokens[-1]
-#
-#    # Initialize the progress bar
-#    progress = tqdm(total=total_size, unit="B", unit_scale=True, desc=f"Downloading {file_name_display}")
-#
-#    # Open a local file to save the download
-#    with open(file_name, "wb") as f:
-#        # Iterate over the response chunks and update the progress bar
-#        for chunk in response.iter_content(chunk_size=1024):
-#            if chunk:  # filter out keep-alive new chunks
-#                f.write(chunk)
-#                progress.update(len(chunk))
-#
-#    # Close the progress bar
-#    progress.close()
 def make_new_folder(content_type, use_new_folder, model_name, lora_old):
     if content_type == "Checkpoint":
         folder = "models/Stable-diffusion"
@@ -322,17 +298,6 @@ def save_image_files(preview_image_html, model_filename, content_type, use_new_f
     
     name = os.path.splitext(model_filename)[0]
 
-    # if platform == "win32":
-    #   model_folder = os.path.join("models\Stable-diffusion",list_models.replace(" ","_").replace("(","").replace(")","").replace("|","").replace(":","-"))
-    # else:
-    #   current_directory = os.getcwd()
-    #   while os.path.basename(current_directory) != "stable-diffusion-webui":
-    #     current_directory = os.path.dirname(current_directory)
-    #   model_folder = os.path.join(current_directory, 'models/Stable-diffusion')
-    #   model_folder = os.path.join(model_folder,list_models.replace(" ","_").replace("(","").replace(")","").replace("|","").replace(":","-"))
-    #   if not os.path.exists(model_folder):
-    #     os.makedirs(model_folder)
-
     current_directory = os.getcwd()
     while os.path.basename(current_directory) != "stable-diffusion-webui":
         current_directory = os.path.dirname(current_directory)
@@ -388,8 +353,8 @@ def on_ui_tabs():
             save_images = gr.Button(value="3rd - Save Images")
             download_model = gr.Button(value="4th - Download Model")
             with gr.Row():
-                save_model_in_new = gr.Checkbox(label="Save Model to new folder", value=False)
-                old_lora = gr.Checkbox(label="Save LoRA to additional-networks", value=False)
+                save_model_in_new = gr.Checkbox(label="Save Model to new folder", value=True)
+                old_lora = gr.Checkbox(label="Save LoRA to additional-networks", value=True)
         with gr.Row():
             preview_image_html = gr.HTML()
         save_text.click(
