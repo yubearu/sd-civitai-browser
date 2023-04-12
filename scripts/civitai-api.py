@@ -1,4 +1,7 @@
 import requests
+from PIL import Image
+from io import BytesIO
+from fake_useragent import UserAgent as ua
 import json
 import modules.scripts as scripts
 import gradio as gr
@@ -28,7 +31,8 @@ def download_file(url, file_name):
             # Get the size of the downloaded file
             downloaded_size = os.path.getsize(file_name)
 
-            # Set the range of the request to start from the current size of the downloaded file
+            # Set the range of the request to start from the current
+            # size of the downloaded file
             headers = {"Range": f"bytes={downloaded_size}-"}
         else:
             downloaded_size = 0
@@ -39,7 +43,9 @@ def download_file(url, file_name):
         file_name_display = tokens[-1]
 
         # Initialize the progress bar
-        progress = tqdm(total=1000000000, unit="B", unit_scale=True, desc=f"Downloading {file_name_display}", initial=downloaded_size, leave=False)
+        progress = tqdm(total=1000000000, unit="B", unit_scale=True,
+                        desc=f"Downloading {file_name_display}",
+                        initial=downloaded_size, leave=False)
 
         # Open a local file to save the download
         with open(file_name, "ab") as f:
@@ -54,7 +60,7 @@ def download_file(url, file_name):
                     # Update the total size of the progress bar if the `Content-Length` header is present
                     if total_size == 0:
                         total_size = downloaded_size
-                    progress.total = total_size 
+                    progress.total = total_size
 
                     # Write the response to the local file and update the progress bar
                     for chunk in response.iter_content(chunk_size=1024):
@@ -116,24 +122,25 @@ def make_new_folder(content_type, use_new_folder, model_name, lora_old):
         else:
             folder = "models/Lora"
             new_folder = "models/Lora/new"
-    if content_type == "TextualInversion" or content_type == "VAE" or content_type == "AestheticGradient":
+    if content_type == "TextualInversion" or content_type == "VAE" or \
+            content_type == "AestheticGradient":
         if use_new_folder:
             model_folder = new_folder
             if not os.path.exists(new_folder):
                 os.makedirs(new_folder)
-            
+
         else:
             model_folder = folder
             if not os.path.exists(model_folder):
                 os.makedirs(model_folder)
-    else:            
+    else:
         if use_new_folder:
             model_folder = os.path.join(new_folder,model_name.replace(" ","_").replace("(","").replace(")","").replace("|","").replace(":","-"))
             if not os.path.exists(new_folder):
                 os.makedirs(new_folder)
             if not os.path.exists(model_folder):
                 os.makedirs(model_folder)
-            
+
         else:
             model_folder = os.path.join(folder,model_name.replace(" ","_").replace("(","").replace(")","").replace("|","").replace(":","-"))
             if not os.path.exists(model_folder):
@@ -143,7 +150,7 @@ def make_new_folder(content_type, use_new_folder, model_name, lora_old):
 def download_file_thread(url, file_name, content_type, use_new_folder, model_name, lora_old):
     model_folder = make_new_folder(content_type, use_new_folder, model_name, lora_old)
 
-    path_to_new_file = os.path.join(model_folder, file_name)     
+    path_to_new_file = os.path.join(model_folder, file_name)
 
     thread = threading.Thread(target=download_file, args=(url, path_to_new_file))
 
@@ -302,34 +309,37 @@ def save_image_files(preview_image_html, model_filename, content_type, use_new_f
     model_folder = make_new_folder(content_type, use_new_folder, list_models, lora_old)
 
     img_urls = re.findall(r'src=[\'"]?([^\'" >]+)', preview_image_html)
-    
-    name = os.path.splitext(model_filename)[0]
 
+    name = os.path.splitext(model_filename)[0]
+    assert(name != "<no select>"), "Please select a Model Filename to download"
     current_directory = os.getcwd()
     while os.path.basename(current_directory) != "stable-diffusion-webui":
         current_directory = os.path.dirname(current_directory)
     new_model_folder = os.path.join(current_directory, model_folder)
-    #new_model_folder = os.path.join(current_directory,list_models.replace(" ","_").replace("(","").replace(")","").replace("|","").replace(":","-"))
+    # new_model_folder = os.path.join(current_directory,list_models.replace(" ","_").replace("(","").replace(")","").replace("|","").replace(":","-"))
 
-    opener = urllib.request.build_opener()
-    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-    urllib.request.install_opener(opener)
+    headers = {"User-Agent": str(ua.random)}
+    print(img_urls)
 
     for i, img_url in enumerate(img_urls):
         filename = f'{name}_{i}.png'
-        img_url = img_url.replace("https", "http").replace("=","%3D")
+        # img_url = img_url.replace("https", "http").replace("=","%3D")
 
-        print(img_url, filename)
+        print(f'Downloading {img_url} to {filename}')
         try:
-            with urllib.request.urlopen(img_url) as url:
+            with requests.get(img_url, headers) as url:
                 with open(os.path.join(new_model_folder, filename), 'wb') as f:
-                    f.write(url.read())
-                    print("\t\t\tDownloaded")
-            #with urllib.request.urlretrieve(img_url, os.path.join(model_folder, filename)) as dl:
-                    
+                    with Image.open(BytesIO(url.content)) as save_me:
+                        save_me.save(f)
+                        print(f'Downloaded {img_url}')
+            # with urllib.request.urlretrieve(img_url, os.path.join(model_folder, filename)) as dl:
+
         except urllib.error.URLError as e:
             print(f'Error: {e.reason}')
-    print("Images downloaded.")
+
+        finally:
+            print("Images downloaded.")
+
 
 def on_ui_tabs():
     with gr.Blocks() as civitai_interface:
