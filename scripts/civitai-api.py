@@ -340,6 +340,10 @@ def save_image_files(preview_image_html, model_filename, content_type, use_new_f
         finally:
             print("Images downloaded.")
 
+    if os.path.exists(os.path.join(new_model_folder, f'{name}_0.png')):
+        with open(os.path.join(new_model_folder, f'{name}_0.png'), 'rb') as f_in:
+            with open(os.path.join(new_model_folder, f'{name}.png'), 'wb') as f_out:
+                f_out.write(f_in.read())
 
 def on_ui_tabs():
     with gr.Blocks() as civitai_interface:
