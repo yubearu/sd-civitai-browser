@@ -115,7 +115,7 @@ def make_new_folder(content_type, use_new_folder, model_name, lora_old):
         else:
             folder = "models/Lora"
             new_folder = "models/Lora/new"
-    elif content_type == "LyCORIS":
+    elif content_type == "LoCon":
         if lora_old:
             folder = "extensions/sd-webui-additional-networks/models/LyCORIS"
             new_folder = "extensions/sd-webui-additional-networks/models/LyCORIS/new"
@@ -349,7 +349,7 @@ def on_ui_tabs():
     with gr.Blocks() as civitai_interface:
         with gr.Row():
             with gr.Column(scale=2):
-                content_type = gr.Radio(label='Content type:', choices=["Checkpoint","Hypernetwork","TextualInversion","AestheticGradient", "VAE", "LORA", "LyCORIS"], value="Checkpoint", type="value")
+                content_type = gr.Radio(label='Content type:', choices=["Checkpoint","Hypernetwork","TextualInversion","AestheticGradient", "VAE", "LORA", "LoCon"], value="Checkpoint", type="value")
             with gr.Column(scale=2):
                 sort_type = gr.Radio(label='Sort List by:', choices=["Newest","Most Downloaded","Highest Rated","Most Liked"], value="Newest", type="value")
             with gr.Column(scale=1):
