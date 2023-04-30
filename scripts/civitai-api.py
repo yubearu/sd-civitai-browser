@@ -115,13 +115,13 @@ def make_new_folder(content_type, use_new_folder, model_name, lora_old):
         else:
             folder = "models/Lora"
             new_folder = "models/Lora/new"
-    elif content_type == "LoCon":
+    elif content_type == "LyCORIS":
         if lora_old:
-            folder = "extensions/sd-webui-additional-networks/models/lora"
-            new_folder = "extensions/sd-webui-additional-networks/models/lora/new"
+            folder = "extensions/sd-webui-additional-networks/models/LyCORIS"
+            new_folder = "extensions/sd-webui-additional-networks/models/LyCORIS/new"
         else:
-            folder = "models/Lora"
-            new_folder = "models/Lora/new"
+            folder = "models/LyCORIS"
+            new_folder = "models/LyCORIS/new"
     if content_type == "TextualInversion" or content_type == "VAE" or \
             content_type == "AestheticGradient":
         if use_new_folder:
@@ -349,13 +349,13 @@ def on_ui_tabs():
     with gr.Blocks() as civitai_interface:
         with gr.Row():
             with gr.Column(scale=2):
-                content_type = gr.Radio(label='Content type:', choices=["Checkpoint","Hypernetwork","TextualInversion","AestheticGradient", "VAE", "LORA", "LoCon"], value="Checkpoint", type="value")
+                content_type = gr.Radio(label='Content type:', choices=["Checkpoint","Hypernetwork","TextualInversion","AestheticGradient", "VAE", "LORA", "LyCORIS"], value="Checkpoint", type="value")
             with gr.Column(scale=2):
                 sort_type = gr.Radio(label='Sort List by:', choices=["Newest","Most Downloaded","Highest Rated","Most Liked"], value="Newest", type="value")
             with gr.Column(scale=1):
                 show_nsfw = gr.Checkbox(label="Show NSFW", value=True)
         with gr.Row():
-            use_search_term = gr.Checkbox(label="Search by term?", value=False)
+            use_search_term = gr.Checkbox(label="Search by term?", value=True)
             search_term = gr.Textbox(label="Search Term", interactive=True, lines=1)
         with gr.Row():
             get_list_from_api = gr.Button(label="Get List", value="Get List")
@@ -375,7 +375,7 @@ def on_ui_tabs():
             download_model = gr.Button(value="4th - Download Model")
             with gr.Row():
                 save_model_in_new = gr.Checkbox(label="Save Model to new folder", value=False)
-                old_lora = gr.Checkbox(label="Save LoRA to additional-networks", value=True)
+                old_lora = gr.Checkbox(label="Save LoRA to additional-networks", value=False)
         with gr.Row():
             preview_image_html = gr.HTML()
         save_text.click(
